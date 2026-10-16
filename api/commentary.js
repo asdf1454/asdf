@@ -1,11 +1,12 @@
 // Vercel 서버 함수: 게임 결과를 받아 OpenRouter 무료 AI에게 한 줄 해설을 받아 돌려줘요.
 // 비밀 키는 Vercel 환경변수(OPENROUTER_API_KEY)에서만 읽어요. 브라우저로는 절대 나가지 않아요.
 
-// 첫 모델이 붐비면(429 등) 다음 모델로 넘어가요.
+// 첫 모델이 붐비거나(429) 멈추거나 빈 답을 주면 다음 모델로 넘어가요.
+// (직접 시험해서 '생각 끄기'로 빠르게 답이 오는 무료 모델만 골랐어요.)
 const MODELS = [
-  "nvidia/nemotron-3.5-lightning:free",
-  "poolside/laguna-s-2.1:free",
-  "google/gemma-4-26b-a4b-it:free",
+  "nvidia/nemotron-3.5-super-vl:free",
+  "dots-studio/dots-3-note-preview:free",
+  "nvidia/nemotron-3-super-120b-a12b:free",
 ];
 
 module.exports = async function handler(req, res) {
@@ -39,17 +40,20 @@ module.exports = async function handler(req, res) {
     try {
       const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
-        signal: AbortSignal.timeout(4000),  // 4초 안에 답이 없으면 포기하고 다음 모델로
+        signal: AbortSignal.timeout(6000),  // 6초 안에 답이 없으면 포기하고 다음 모델로
         headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           model,
-          max_tokens: 100,
+          max_tokens: 500,
+          // 생각(reasoning)을 끄지 않으면 모델이 생각하다 글자 수를 다 써서 답이 비어 와요.
+          reasoning: { enabled: false },
           messages: [{ role: "user", content: prompt }],
         }),
       });
       if (!r.ok) continue;  // 429 등 실패하면 다음 모델 시도
       const data = await r.json();
-      const text = (data.choices?.[0]?.message?.content || "").trim().replace(/\s+/g, " ");
+      // 여러 줄이면 첫 줄만, 따옴표는 걷어내요
+      const text = (data.choices?.[0]?.message?.content || "").trim().split("\n")[0].replace(/^["'“”]+|["'“”]+$/g, "").trim();
       if (text) return res.status(200).json({ comment: text.slice(0, 80) });
     } catch (e) {
       // 네트워크 오류도 다음 모델로 넘어가요

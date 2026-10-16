@@ -13,6 +13,12 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: "POST만 가능해요" });
   }
 
+  // 다른 사이트에서 이 주소를 몰래 호출하는 것을 막아요 (같은 사이트에서 온 요청만 허용).
+  const origin = req.headers.origin;
+  if (origin && new URL(origin).host !== req.headers.host) {
+    return res.status(403).json({ error: "허용되지 않은 요청이에요" });
+  }
+
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) {
     return res.status(500).json({ error: "서버에 키가 설정되지 않았어요" });
@@ -33,6 +39,7 @@ module.exports = async function handler(req, res) {
     try {
       const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
+        signal: AbortSignal.timeout(4000),  // 4초 안에 답이 없으면 포기하고 다음 모델로
         headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           model,

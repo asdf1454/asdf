@@ -49,7 +49,10 @@
 
   // 게임이 끝나면 승자와 핑퐁 횟수를 서버(/api/commentary)로 보내 AI 해설 한 줄을 받아와요.
   // 비밀 키는 서버에만 있고, 이 파일에는 없어요.
+  let gameId = 0;        // 게임이 새로 시작/리셋될 때마다 올라가는 번호 (낡은 해설 구분용)
+
   async function showCommentary(winner) {
+    const myGame = gameId;
     if (location.protocol === "file:") {
       commentaryEl.textContent = "배포하면 AI 해설이 나옵니다";
       return;
@@ -63,7 +66,7 @@
       });
       const data = await res.json();
       // 그 사이 새 게임을 시작했다면 낡은 해설은 보여주지 않아요
-      if (running) return;
+      if (myGame !== gameId) return;
       commentaryEl.textContent = data.comment || "";
     } catch (e) {
       commentaryEl.textContent = "";
@@ -85,6 +88,7 @@
     ball.x = W / 2; ball.y = H / 2;
     running = false;
     hits = 0;
+    gameId++;
     commentaryEl.textContent = "";
     message = "스페이스바를 눌러 시작!";
   }
@@ -185,6 +189,8 @@
     if (key === " " && !running) {
       if (left.score >= WIN_SCORE || right.score >= WIN_SCORE) reset();
       running = true;
+      gameId++;
+      commentaryEl.textContent = "";
       serve(Math.random() < 0.5 ? 1 : -1);
     }
   });

@@ -20,6 +20,7 @@
   button { font-size: 16px; padding: 8px 16px; margin: 6px; border: 0; border-radius: 6px; cursor: pointer; }
   .p1 { color: #89b4fa; }
   .p2 { color: #fab387; }
+  #commentary { min-height: 1.5em; font-size: 18px; color: #a6e3a1; text-align: center; padding: 0 12px; }
 </style>
 </head>
 <body>
@@ -28,6 +29,7 @@
   <div><button id="restart">다시 시작</button></div>
   <p><span class="p1">나(왼쪽): W / S 또는 ↑ / ↓</span> &nbsp; <span class="p2">AI(오른쪽): 자동</span></p>
   <p>공을 놓치면 상대가 1점! 먼저 5점을 얻으면 이겨요. 스페이스바를 누르면 시작해요.</p>
+  <p id="commentary"></p>
 
 <script>
   const canvas = document.getElementById("board");
@@ -42,6 +44,31 @@
   const held = {};       // 지금 눌려 있는 키들
   let running = false;   // 공이 움직이는 중인지
   let message = "스페이스바를 눌러 시작!";
+  let hits = 0;          // 이번 게임에서 공이 패들에 맞은 횟수(핑퐁 횟수)
+  const commentaryEl = document.getElementById("commentary");
+
+  // 게임이 끝나면 승자와 핑퐁 횟수를 서버(/api/commentary)로 보내 AI 해설 한 줄을 받아와요.
+  // 비밀 키는 서버에만 있고, 이 파일에는 없어요.
+  async function showCommentary(winner) {
+    if (location.protocol === "file:") {
+      commentaryEl.textContent = "배포하면 AI 해설이 나옵니다";
+      return;
+    }
+    commentaryEl.textContent = "AI 해설 작성 중…";
+    try {
+      const res = await fetch("/api/commentary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ winner, hits })
+      });
+      const data = await res.json();
+      // 그 사이 새 게임을 시작했다면 낡은 해설은 보여주지 않아요
+      if (running) return;
+      commentaryEl.textContent = data.comment || "";
+    } catch (e) {
+      commentaryEl.textContent = "";
+    }
+  }
 
   function serve(direction) {
     ball.x = W / 2;
@@ -57,6 +84,8 @@
     ball.vx = ball.vy = 0;
     ball.x = W / 2; ball.y = H / 2;
     running = false;
+    hits = 0;
+    commentaryEl.textContent = "";
     message = "스페이스바를 눌러 시작!";
   }
 
@@ -96,6 +125,7 @@
         ball.vx = dir * speed * Math.cos(hitPos * 0.9);
         ball.vy = speed * Math.sin(hitPos * 0.9);
         ball.x = p === left ? p.x + PADDLE_W + BALL / 2 : p.x - BALL / 2;
+        hits++;
       }
     });
 
@@ -110,6 +140,7 @@
       running = false;
       ball.vx = ball.vy = 0;
       message = (scorer === left ? "내가" : "AI가") + " 승리! 🎉 (스페이스바: 다시 시작)";
+      showCommentary(scorer === left ? "me" : "ai");
     } else {
       serve(nextDir);  // 점수를 잃은 쪽으로 공을 보냄
     }

@@ -141,32 +141,36 @@
 
     <div class="card" id="aiCard">
       <h3>🤖 AI 보조 판단 (선택)</h3>
-      <p class="phone-note" style="margin-top:0">규칙이 놓치는 새로운 수법을 AI가 한 번 더 봐 줘요. 문자는 <b>개인정보를 가린 뒤에만</b> 보내지고, 아래 버튼을 누르기 전에는 아무것도 전송되지 않아요.</p>
-      <label class="lbl" for="aiKey">OpenRouter API 키 (이 화면을 닫으면 사라지고, 어디에도 저장하지 않아요)</label>
-      <input type="password" id="aiKey" placeholder="sk-or-..." autocomplete="off">
-      <label class="lbl" for="aiModel">모델 (무료만)</label>
-      <select id="aiModel" style="width:100%;padding:10px 12px;font-size:16px;font-family:inherit;border:2px solid #d1d5db;border-radius:10px;background:#fff"></select>
-      <input type="text" id="aiModelCustom" style="display:none;margin-top:6px" placeholder="예: 회사/모델이름:free" autocomplete="off">
-      <label class="lbl" style="display:flex;gap:8px;align-items:flex-start">
-        <input type="checkbox" id="aiFallback" checked style="margin-top:4px">
-        <span>실패하면 다음 모델로 자동 시도 (최대 3개)</span>
-      </label>
-      <p class="phone-note" style="margin:4px 0 0">무료 모델만 쓸 수 있어요. 무료는 <b>분당 20회, 하루 50회</b>까지고 <b>실패한 시도도 횟수에 들어가요.</b> 무료 모델은 자주 바뀌어서 '이 모델을 찾지 못했어요'가 나올 수 있어요. 무료 모델 제공사가 입력 내용을 저장하는지는 확인하지 못했어요. 그래서 개인정보를 가린 내용만 보냅니다.</p>
+      <p class="phone-note" style="margin-top:0">규칙이 놓치는 새로운 수법을 AI가 한 번 더 봐 줘요. <b>키 입력이나 로그인 없이</b> 쓸 수 있고, 문자는 <b>개인정보를 가린 뒤에만</b> 보내져요. 아래 버튼을 누르기 전에는 아무것도 전송되지 않아요.</p>
       <label class="lbl">AI에 보낼 내용 (개인정보를 가린 모습)</label>
       <div class="shown" id="aiPreview"></div>
       <p class="phone-note" id="aiMasked"></p>
       <label class="lbl" style="display:flex;gap:8px;align-items:flex-start">
         <input type="checkbox" id="aiAgree" style="margin-top:4px">
-        <span>위 내용이 외부 AI 서비스(OpenRouter)로 전송되는 것에 동의합니다.</span>
+        <span>위 내용이 외부 AI 서비스(OpenRouter 무료 모델)로 전송되는 것에 동의합니다. (아래에 키를 넣지 않으면 이 사이트의 서버를 거쳐 전송돼요. 서버에는 저장하지 않아요.)</span>
       </label>
       <div class="row"><button class="main-btn" id="aiBtn">AI에게 물어보기</button></div>
+      <p class="phone-note">무료라서 <b>하루 사용 횟수에 한도</b>가 있고, 한도가 차면 "AI가 바쁘다"는 안내가 나와요. 그럴 땐 잠시 뒤에 다시 하거나 아래에 내 키를 넣어 쓰세요.</p>
+      <details style="margin-top:12px">
+        <summary style="cursor:pointer;font-size:14px;color:#374151">내 OpenRouter 키로 직접 쓰기 (선택)</summary>
+        <label class="lbl" for="aiKey">OpenRouter API 키 (이 화면을 닫으면 사라지고, 어디에도 저장하지 않아요)</label>
+        <input type="password" id="aiKey" placeholder="sk-or-..." autocomplete="off">
+        <label class="lbl" for="aiModel">모델 (무료만)</label>
+        <select id="aiModel" style="width:100%;padding:10px 12px;font-size:16px;font-family:inherit;border:2px solid #d1d5db;border-radius:10px;background:#fff"></select>
+        <input type="text" id="aiModelCustom" style="display:none;margin-top:6px" placeholder="예: 회사/모델이름:free" autocomplete="off">
+        <label class="lbl" style="display:flex;gap:8px;align-items:flex-start">
+          <input type="checkbox" id="aiFallback" checked style="margin-top:4px">
+          <span>실패하면 다음 모델로 자동 시도 (최대 3개)</span>
+        </label>
+        <p class="phone-note" style="margin:4px 0 0">무료 모델만 쓸 수 있어요. 무료는 <b>분당 20회, 하루 50회</b>까지고 <b>실패한 시도도 횟수에 들어가요.</b> 무료 모델은 자주 바뀌어서 '이 모델을 찾지 못했어요'가 나올 수 있어요. 무료 모델 제공사가 입력 내용을 저장하는지는 확인하지 못했어요. 그래서 개인정보를 가린 내용만 보냅니다.</p>
+      </details>
       <div id="aiOut"></div>
     </div>
   </div>
 
   <p class="note">※ 이 도구는 참고용이며 100% 정확하지 않습니다. 새로운 수법은 놓칠 수 있어요.<br>
   입력한 문자는 기본적으로 내 컴퓨터 안에서만 분석되고 어디로도 전송되지 않습니다.<br>
-  (단, ① 전화번호 옆 '더콜·구글·네이버' 버튼을 누르면 그 번호가 해당 사이트로 전달되고, ② 'AI에게 물어보기'를 동의하고 누르면 <b>개인정보를 가린 문자</b>가 OpenRouter로 전송됩니다.)</p>
+  (단, ① 전화번호 옆 '더콜·구글·네이버' 버튼을 누르면 그 번호가 해당 사이트로 전달되고, ② 'AI에게 물어보기'를 동의하고 누르면 <b>개인정보를 가린 문자</b>가 (키를 넣지 않은 경우) 이 사이트의 서버를 거쳐 OpenRouter 무료 모델로 전송됩니다. 서버에는 저장하지 않습니다.)</p>
 </div>
 
 <script>
@@ -530,6 +534,36 @@ async function askWithFallback({ key, models, masked, fetchImpl }) {
   throw makeErr("시도한 모델이 모두 실패했어요. 마지막 이유: " + (last ? last.reason : "알 수 없음"), false);
 }
 
+// 키 없이 쓰기: 이 사이트의 서버 함수(/api/judge)가 서버에 숨겨 둔 키로 대신 물어봐 줍니다. (배포된 주소에서만 동작)
+async function askServer({ masked, fetchImpl, timeoutMs }) {
+  const f = fetchImpl || fetch;
+  const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timer = ctrl ? setTimeout(() => ctrl.abort(), timeoutMs || 25000) : null;
+  let res;
+  try {
+    res = await f("/api/judge", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: masked }),
+      signal: ctrl ? ctrl.signal : undefined
+    });
+  } catch (e) {
+    throw makeErr(e && e.name === "AbortError" ? "시간이 너무 오래 걸려 멈췄어요. 잠시 뒤 다시 해 보세요." : "서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요.", false);
+  } finally { if (timer) clearTimeout(timer); }
+  let data = null;
+  try { data = await res.json(); } catch (e) { data = null; }
+  const serverMsg = data && typeof data.error === "string" ? data.error : "";
+  if (res.status === 404) throw makeErr("이 주소에는 AI 서버가 없어요. 배포된 사이트에서 쓰거나, 아래 '내 키로 직접 쓰기'를 사용하세요.", true);
+  if (res.status === 429) throw makeErr(serverMsg || "너무 자주 눌렀어요. 1분쯤 뒤에 다시 해 주세요.", true);
+  if (res.status === 500) throw makeErr("서버에 AI 키가 설정되지 않았어요. 아래 '내 키로 직접 쓰기'를 사용해 주세요.", true);
+  if (res.status === 502) throw makeErr(serverMsg || "지금은 AI가 바쁘거나 오늘 사용 한도가 찬 것 같아요. 잠시 뒤에 다시 하거나 아래에 내 키를 넣어 쓰세요.", false);
+  if (!res.ok) throw makeErr("서버 오류예요 (" + res.status + ").", false);
+  const parsed = parseAI(JSON.stringify(data));
+  if (!parsed) throw makeErr("서버 답변 형식이 예상과 달라서 결과를 보여 줄 수 없어요. 다시 해 보세요.", false);
+  parsed.usedModel = (data && data.model) || "서버";
+  return parsed;
+}
+
 // ---------- 4. 화면에 보여 주기 ----------
 function esc(s) {
   return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -699,14 +733,20 @@ document.getElementById("aiBtn").addEventListener("click", async () => {
   const model = (picked === "__custom__" ? document.getElementById("aiModelCustom").value.trim() : picked) || "openrouter/free";
   const fallback = document.getElementById("aiFallback").checked && picked !== "__custom__";
   if (!currentCheck) { out.innerHTML = "<p class='phone-note'>먼저 위에서 문자를 판별해 주세요.</p>"; return; }
-  if (!key) { out.innerHTML = "<p class='phone-note'>OpenRouter API 키를 입력해 주세요.</p>"; return; }
   if (!document.getElementById("aiAgree").checked) { out.innerHTML = "<p class='phone-note'>전송 동의에 체크해 주세요.</p>"; return; }
+  const ownKey = key !== "";
+  if (!ownKey && !/^https?:$/.test(location.protocol)) {   // 파일로 열었거나 미리보기일 때는 서버가 없어요
+    out.innerHTML = "<p class='phone-note'>컴퓨터에서 파일로 연 화면에는 AI 서버가 없어요. 배포된 사이트에서 쓰거나, 아래 '내 키로 직접 쓰기'에 키를 넣어 주세요.</p>";
+    return;
+  }
 
   const btn = document.getElementById("aiBtn");
   btn.disabled = true; btn.textContent = "AI가 보는 중...";
   out.innerHTML = "";
   try {
-    const ai = await askWithFallback({ key: key, models: modelOrder(model, fallback), masked: currentCheck.masked });
+    const ai = ownKey
+      ? await askWithFallback({ key: key, models: modelOrder(model, fallback), masked: currentCheck.masked })
+      : await askServer({ masked: currentCheck.masked });
     const rule = currentCheck.rule;
     const failNote = ai.failed && ai.failed.length
       ? "<p class='phone-note'>앞서 실패한 모델: " + ai.failed.map(f => esc(f.model) + " (" + esc(f.reason) + ")").join(", ") + "</p>" : "";

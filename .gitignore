@@ -3,3 +3,10 @@
 *.env
 .vercel
 node_modules
+
+# 실수로 공개되면 안 되는 파일들
+apikey.txt
+*.hwpx
+.claude/
+.playwright-mcp/
+compare/results_*.csv
